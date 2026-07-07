@@ -1,4 +1,4 @@
-#!/Users/mac/Desktop/MyDesktop/Work/scripts/Scripts/.venv/bin/python3.12
+#!/Users/mac/Desktop/MyDesktop/Work/scripts/Scripts/.venv/bin/python3
 
 import sys
 import json
