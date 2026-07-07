@@ -3,7 +3,7 @@
 sync_all_to_fc.py
 
 Syncs Pricelists, Accounts, DiscountValues, and Stock from DynamoDB
-(TradePricelists, TradeAccounts2, TradeDiscountValues2, TradeStock)
+(TradePricelists, TargetsAccounts2, TradeDiscountValues2, TradeStock)
 to the RapidTrade QA REST API.
 
 Order: Pricelists -> Accounts -> DiscountValues -> Stock
@@ -27,13 +27,25 @@ PERFORMANCE NOTES (why this version is faster for ~120k+ records):
     the QA endpoint honors Content-Encoding: gzip. If it doesn't, turn it
     back off -- some API gateways reject unrecognized encodings.
 
+ENTITY SELECTION:
+  - By default (no --entity / --entities / --all flag) the script now asks
+    interactively whether to sync ALL four entities or let you PICK which
+    ones, so you don't have to remember flag syntax for a one-off partial run.
+  - --entity <key>        run exactly one entity, no prompt
+  - --entities a,b,c      run a specific comma-separated list, no prompt
+  - --all                 run all four, no prompt
+  - Any of the above skips the interactive picker entirely (useful for cron
+    / --auto runs where nothing should block on input()).
+
 Usage:
-    python sync_all_to_fc.py                     # full interactive run, all entities (sequential)
-    python sync_all_to_fc.py --entity pricelist   # just one entity
+    python sync_all_to_fc.py                     # interactive: asks all vs pick, then runs
+    python sync_all_to_fc.py --entity pricelist   # just one entity, no prompt
+    python sync_all_to_fc.py --entities pricelist,stock   # a couple entities, no prompt
+    python sync_all_to_fc.py --all                # all four, no prompt
     python sync_all_to_fc.py --dry-run            # scan + chunk only, no network calls
-    python sync_all_to_fc.py --auto               # skip prompts, run entities concurrently
-    python sync_all_to_fc.py --auto --workers 20  # tune concurrency
-    python sync_all_to_fc.py --auto --gzip        # compress upload bodies
+    python sync_all_to_fc.py --auto               # skip confirmation prompts, run concurrently
+    python sync_all_to_fc.py --auto --all --workers 20  # tune concurrency, fully non-interactive
+    python sync_all_to_fc.py --auto --all --gzip  # compress upload bodies
 
 Requires: boto3, requests
     pip install boto3 requests --break-system-packages
@@ -64,13 +76,13 @@ AWS_PROFILE = "musa"
 DEFAULT_REGION = "us-east-1"
 
 # Scope every table query to this SupplierID (assumed to be the partition key
-# on TradePricelists / TradeAccounts2 / TradeDiscountValues2 / TradeStock).
+# on TradePricelists / TargetsAccounts2 / TradeDiscountValues2 / TradeStock).
 # Set to None to fall back to a full table Scan (all suppliers).
 SUPPLIER_ID = "SAGREETINGSTEST"
 
 API_BASE = "https://qa.rapidtradews.com/post"
 API_USERNAME = "SAGREETINGS2"
-API_PASSWORD = "PASSWORD"  # TODO: confirm this is the real password / auth style
+API_PASSWORD = "PASSWORD" 
 
 # If the real auth is different (e.g. token in JSON body instead of Basic Auth),
 # change AUTH_MODE to "payload" and fill in how the endpoint expects it.
@@ -95,8 +107,8 @@ ENTITIES = [
     {
         "key": "accounts",
         "name": "Accounts",
-        "table": "TradeAccounts2",
-        "endpoint": f"{API_BASE}/accounts",
+        "table": "TargetsAccounts2",
+        "endpoint": f"{API_BASE}/account",
     },
     {
         "key": "discountvalues2",
@@ -351,6 +363,81 @@ class ConfirmState:
 
 
 # ---------------------------------------------------------------------------
+# Entity selection — decide which of the 4 entities to run.
+# Priority: --entity  >  --entities  >  --all  >  interactive prompt.
+# ---------------------------------------------------------------------------
+
+def parse_entities_arg(raw, all_keys):
+    """Parse a comma-separated --entities value into a validated key list,
+    preserving ENTITIES order (not the order the user typed them in)."""
+    requested = {k.strip().lower() for k in raw.split(",") if k.strip()}
+    unknown = requested - set(all_keys)
+    if unknown:
+        valid = ", ".join(all_keys)
+        raise SystemExit(f"Unknown entity key(s): {', '.join(sorted(unknown))}. Valid keys: {valid}")
+    return [e for e in ENTITIES if e["key"] in requested]
+
+
+def prompt_entity_selection():
+    """Interactive picker used when no --entity / --entities / --all flag
+    was given. Asks ALL vs PICK, and if PICK, which ones (by number)."""
+    log_info("No --entity / --entities / --all flag given — asking interactively.")
+    print("\nWhich entities should be synced?")
+    print("  a) ALL  (pricelist, accounts, discountvalues2, stock)")
+    print("  p) PICK specific ones")
+    while True:
+        choice = input("Choose [a/p]: ").strip().lower()
+        if choice in ("a", "all", ""):
+            return ENTITIES
+        if choice in ("p", "pick"):
+            break
+        print("Please type 'a' for all or 'p' to pick.")
+
+    print("\nAvailable entities:")
+    for i, e in enumerate(ENTITIES, start=1):
+        print(f"  {i}) {e['name']}  (key: {e['key']})")
+
+    while True:
+        raw = input(
+            "\nEnter the numbers or keys you want, comma-separated "
+            "(e.g. '1,3' or 'pricelist,stock'): "
+        ).strip()
+        if not raw:
+            print("Please enter at least one entity.")
+            continue
+
+        tokens = [t.strip() for t in raw.split(",") if t.strip()]
+        selected = []
+        bad_tokens = []
+        for tok in tokens:
+            if tok.isdigit() and 1 <= int(tok) <= len(ENTITIES):
+                entity = ENTITIES[int(tok) - 1]
+                if entity not in selected:
+                    selected.append(entity)
+            else:
+                match = next((e for e in ENTITIES if e["key"] == tok.lower()), None)
+                if match and match not in selected:
+                    selected.append(match)
+                elif not match:
+                    bad_tokens.append(tok)
+
+        if bad_tokens:
+            print(f"Didn't recognize: {', '.join(bad_tokens)}. Try again.")
+            continue
+        if not selected:
+            print("No valid entities selected. Try again.")
+            continue
+
+        # Keep canonical ENTITIES order regardless of how the user typed them.
+        ordered = [e for e in ENTITIES if e in selected]
+        names = ", ".join(e["name"] for e in ordered)
+        confirm = input(f"Sync these {len(ordered)} entities: {names}? [y/N]: ").strip().lower()
+        if confirm == "y":
+            return ordered
+        print("OK, let's try the selection again.")
+
+
+# ---------------------------------------------------------------------------
 # Per-entity pipeline (streaming: fetch and upload overlap)
 # ---------------------------------------------------------------------------
 
@@ -496,11 +583,21 @@ def process_entity(session_boto, entity, dry_run=False, auto=False, region=DEFAU
 # ---------------------------------------------------------------------------
 
 def main():
+    all_keys = [e["key"] for e in ENTITIES]
+
     parser = argparse.ArgumentParser(description="Sync Pricelists/Accounts/DiscountValues/Stock to FC QA API")
     parser.add_argument(
         "--entity",
-        choices=[e["key"] for e in ENTITIES],
-        help="Run only this entity instead of all four",
+        choices=all_keys,
+        help="Run only this single entity, no prompt",
+    )
+    parser.add_argument(
+        "--entities",
+        help=f"Comma-separated list of entities to run, no prompt (choices: {', '.join(all_keys)})",
+    )
+    parser.add_argument(
+        "--all", action="store_true",
+        help="Run all four entities, no prompt",
     )
     parser.add_argument("--dry-run", action="store_true", help="Peek + chunk only, no uploads")
     parser.add_argument("--auto", action="store_true",
@@ -513,9 +610,22 @@ def main():
 
     session = boto3.Session(profile_name=AWS_PROFILE, region_name=args.region)
 
-    targets = ENTITIES
+    # Decide which entities to run. Explicit flags always win and skip the
+    # prompt (important for --auto / cron use so nothing blocks on input()).
     if args.entity:
         targets = [e for e in ENTITIES if e["key"] == args.entity]
+    elif args.entities:
+        targets = parse_entities_arg(args.entities, all_keys)
+    elif args.all:
+        targets = ENTITIES
+    else:
+        targets = prompt_entity_selection()
+
+    if not targets:
+        log_error("No entities selected to run. Exiting.")
+        return
+
+    log_info(f"Selected entities: {', '.join(e['name'] for e in targets)}")
 
     overall_start = time.time()
 

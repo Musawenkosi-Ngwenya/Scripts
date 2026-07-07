@@ -1,0 +1,201 @@
+2026-07-07 16:27:11,358 [INFO] No --entity / --entities / --all flag given — asking interactively.
+2026-07-07 16:27:32,041 [INFO] Selected entities: Accounts, Stock
+2026-07-07 16:27:32,043 [INFO] ======================================================================
+2026-07-07 16:27:32,043 [INFO] Accounts  (table: TradeAccounts2  ->  https://qa.rapidtradews.com/post/accounts)
+2026-07-07 16:27:32,043 [INFO] ======================================================================
+2026-07-07 16:27:32,172 [INFO] Querying TradeAccounts2 for SupplierID=SAGREETINGSTEST...
+2026-07-07 16:28:37,619 [INFO] No --entity / --entities / --all flag given — asking interactively.
+2026-07-07 16:28:46,409 [INFO] Selected entities: Accounts, Stock
+2026-07-07 16:28:46,410 [INFO] ======================================================================
+2026-07-07 16:28:46,411 [INFO] Accounts  (table: TargetsAccounts2  ->  https://qa.rapidtradews.com/post/accounts)
+2026-07-07 16:28:46,411 [INFO] ======================================================================
+2026-07-07 16:28:46,547 [INFO] Querying TargetsAccounts2 for SupplierID=SAGREETINGSTEST...
+2026-07-07 16:28:51,553 [INFO]     ...page 1 query still in progress (5s elapsed)
+2026-07-07 16:28:56,556 [INFO]     ...page 1 query still in progress (10s elapsed)
+2026-07-07 16:29:01,563 [INFO]     ...page 1 query still in progress (15s elapsed)
+2026-07-07 16:29:06,568 [INFO]     ...page 1 query still in progress (20s elapsed)
+2026-07-07 16:29:11,574 [INFO]     ...page 1 query still in progress (25s elapsed)
+2026-07-07 16:29:16,579 [INFO]     ...page 1 query still in progress (30s elapsed)
+2026-07-07 16:29:21,587 [INFO]     ...page 1 query still in progress (35s elapsed)
+2026-07-07 16:29:26,596 [INFO]     ...page 1 query still in progress (40s elapsed)
+2026-07-07 16:29:31,604 [INFO]     ...page 1 query still in progress (45s elapsed)
+2026-07-07 16:29:36,610 [INFO]     ...page 1 query still in progress (50s elapsed)
+2026-07-07 16:29:41,654 [INFO]     ...page 1 query still in progress (55s elapsed)
+2026-07-07 16:29:46,656 [INFO]     ...page 1 query still in progress (60s elapsed)
+2026-07-07 16:29:51,663 [INFO]     ...page 1 query still in progress (65s elapsed)
+2026-07-07 16:29:56,669 [INFO]     ...page 1 query still in progress (70s elapsed)
+2026-07-07 16:30:01,674 [INFO]     ...page 1 query still in progress (75s elapsed)
+2026-07-07 16:30:06,680 [INFO]     ...page 1 query still in progress (80s elapsed)
+2026-07-07 16:30:11,689 [INFO]     ...page 1 query still in progress (85s elapsed)
+2026-07-07 16:30:13,470 [INFO]     page 1: +1232 records (running total 1232, 86.9s elapsed)
+2026-07-07 16:30:13,478 [INFO] Sending first batch (500 records) for review...
+2026-07-07 16:30:17,839 [WARNING]   batch 1/? attempt 1 -> HTTP 404: 404 page not found
+
+2026-07-07 16:30:27,049 [WARNING]   batch 1/? attempt 2 -> HTTP 404: 404 page not found
+
+2026-07-07 16:30:34,127 [WARNING]   batch 1/? attempt 3 -> HTTP 404: 404 page not found
+
+2026-07-07 16:30:34,128 [ERROR]   batch 1/? FAILED after 3 attempts: HTTP 404: 404 page not found
+
+2026-07-07 16:30:34,128 [INFO] Sample record sent:
+{
+  "Userfield01": null,
+  "AreaID": " ",
+  "RepID": " ",
+  "UserAmount01": 0,
+  "UserAmount02": 0,
+  "UserAmount03": 0,
+  "UserAmount04": 0,
+  "Userfield08": null,
+  "UserAmount05": 0,
+  "Version": "20260626084812",
+  "Userfield09": null,
+  "UserAmount06": 0,
+  "Userfield06": null,
+  "UserAmount07": 0,
+  "Userfield07": null,
+  "UserAmount08": 0,
+  "Userfield04": null,
+  "UserAmount09": 0,
+  "Userfield05": null,
+  "Userfield02": null,
+  "Name": null,
+  "Userfield03": null,
+  "Userfield11": null,
+  "Userfield12": "{\"VisitType\":\"E\",\"VisitTime\":30}",
+  "Userfield10": null,
+  "SupplierID": "SAGREETINGSTEST",
+  "Userfield19": null,
+  "Contacts": null,
+  "Userfield17": null,
+  "Userfield18": null,
+  "Userfield15": null,
+  "PostedToERP": false,
+  "Userfield16": null,
+  "Userfield13": null,
+  "Userfield14": null,
+  "Userfield20": null,
+  "BranchID": " ",
+  "Longitude": null,
+  "Latitude": null,
+  "SearchTerm": " |01-MAR| |",
+  "Industry": null,
+  "PaymentTerms": null,
+  "Currency": null,
+  "Deleted": false,
+  "CustomerSegmentation": null,
+  "LastCheckin": "0001-01-01T00:00:00Z",
+  "SearchField": null,
+  "VAT": 0,
+  "AccountUser": null,
+  "CreatedbyRT": false,
+  "DefaultWarehouse": null,
+  "UserAmount10": 0,
+  "Pricelist": null,
+  "AccountGroup": null,
+  "Company": null,
+  "Addresses": null,
+  "AccountType": null,
+  "AccountID": "01-MAR"
+}
+2026-07-07 16:30:34,129 [ERROR] First batch for Accounts failed. Stopping before sending the rest.
+2026-07-07 16:30:34,167 [INFO] ======================================================================
+2026-07-07 16:30:34,167 [INFO] Stock  (table: TradeStock  ->  https://qa.rapidtradews.com/post/stock)
+2026-07-07 16:30:34,167 [INFO] ======================================================================
+2026-07-07 16:30:34,199 [INFO] Querying TradeStock for SupplierID=SAGREETINGSTEST...
+2026-07-07 16:30:39,204 [INFO]     ...page 1 query still in progress (5s elapsed)
+2026-07-07 16:30:44,210 [INFO]     ...page 1 query still in progress (10s elapsed)
+2026-07-07 16:30:49,216 [INFO]     ...page 1 query still in progress (15s elapsed)
+2026-07-07 16:30:54,220 [INFO]     ...page 1 query still in progress (20s elapsed)
+2026-07-07 16:30:59,222 [INFO]     ...page 1 query still in progress (25s elapsed)
+2026-07-07 16:31:04,225 [INFO]     ...page 1 query still in progress (30s elapsed)
+2026-07-07 16:31:09,234 [INFO]     ...page 1 query still in progress (35s elapsed)
+2026-07-07 16:31:14,239 [INFO]     ...page 1 query still in progress (40s elapsed)
+2026-07-07 16:31:20,749 [INFO] No --entity / --entities / --all flag given — asking interactively.
+2026-07-07 16:31:27,713 [INFO] Selected entities: Accounts, Stock
+2026-07-07 16:31:27,714 [INFO] ======================================================================
+2026-07-07 16:31:27,714 [INFO] Accounts  (table: TargetsAccounts2  ->  https://qa.rapidtradews.com/post/account)
+2026-07-07 16:31:27,714 [INFO] ======================================================================
+2026-07-07 16:31:27,839 [INFO] Querying TargetsAccounts2 for SupplierID=SAGREETINGSTEST...
+2026-07-07 16:31:32,844 [INFO]     ...page 1 query still in progress (5s elapsed)
+2026-07-07 16:31:37,850 [INFO]     ...page 1 query still in progress (10s elapsed)
+2026-07-07 16:31:42,859 [INFO]     ...page 1 query still in progress (15s elapsed)
+2026-07-07 16:31:47,866 [INFO]     ...page 1 query still in progress (20s elapsed)
+2026-07-07 16:31:52,881 [INFO]     ...page 1 query still in progress (25s elapsed)
+2026-07-07 16:31:57,895 [INFO]     ...page 1 query still in progress (30s elapsed)
+2026-07-07 16:32:02,899 [INFO]     ...page 1 query still in progress (35s elapsed)
+2026-07-07 16:32:07,905 [INFO]     ...page 1 query still in progress (40s elapsed)
+2026-07-07 16:32:12,907 [INFO]     ...page 1 query still in progress (45s elapsed)
+2026-07-07 16:32:17,911 [INFO]     ...page 1 query still in progress (50s elapsed)
+2026-07-07 16:32:22,918 [INFO]     ...page 1 query still in progress (55s elapsed)
+2026-07-07 16:32:27,923 [INFO]     ...page 1 query still in progress (60s elapsed)
+2026-07-07 16:32:32,927 [INFO]     ...page 1 query still in progress (65s elapsed)
+2026-07-07 16:32:37,930 [INFO]     ...page 1 query still in progress (70s elapsed)
+2026-07-07 16:32:42,937 [INFO]     ...page 1 query still in progress (75s elapsed)
+2026-07-07 16:32:47,942 [INFO]     ...page 1 query still in progress (80s elapsed)
+2026-07-07 16:32:52,948 [INFO]     ...page 1 query still in progress (85s elapsed)
+2026-07-07 16:32:53,727 [INFO]     page 1: +1232 records (running total 1232, 85.9s elapsed)
+2026-07-07 16:32:53,735 [INFO] Sending first batch (500 records) for review...
+2026-07-07 16:32:58,356 [INFO]   batch 1/? -> 200 (500 records)
+2026-07-07 16:32:58,360 [INFO] Sample record sent:
+{
+  "Userfield01": null,
+  "AreaID": " ",
+  "RepID": " ",
+  "UserAmount01": 0,
+  "UserAmount02": 0,
+  "UserAmount03": 0,
+  "UserAmount04": 0,
+  "Userfield08": null,
+  "UserAmount05": 0,
+  "Version": "20260626084812",
+  "Userfield09": null,
+  "UserAmount06": 0,
+  "Userfield06": null,
+  "UserAmount07": 0,
+  "Userfield07": null,
+  "UserAmount08": 0,
+  "Userfield04": null,
+  "UserAmount09": 0,
+  "Userfield05": null,
+  "Userfield02": null,
+  "Name": null,
+  "Userfield03": null,
+  "Userfield11": null,
+  "Userfield12": "{\"VisitType\":\"E\",\"VisitTime\":30}",
+  "Userfield10": null,
+  "SupplierID": "SAGREETINGSTEST",
+  "Userfield19": null,
+  "Contacts": null,
+  "Userfield17": null,
+  "Userfield18": null,
+  "Userfield15": null,
+  "PostedToERP": false,
+  "Userfield16": null,
+  "Userfield13": null,
+  "Userfield14": null,
+  "Userfield20": null,
+  "BranchID": " ",
+  "Longitude": null,
+  "Latitude": null,
+  "SearchTerm": " |01-MAR| |",
+  "Industry": null,
+  "PaymentTerms": null,
+  "Currency": null,
+  "Deleted": false,
+  "CustomerSegmentation": null,
+  "LastCheckin": "0001-01-01T00:00:00Z",
+  "SearchField": null,
+  "VAT": 0,
+  "AccountUser": null,
+  "CreatedbyRT": false,
+  "DefaultWarehouse": null,
+  "UserAmount10": 0,
+  "Pricelist": null,
+  "AccountGroup": null,
+  "Company": null,
+  "Addresses": null,
+  "AccountType": null,
+  "AccountID": "01-MAR"
+}
+2026-07-07 16:32:58,361 [INFO] API response body (truncated): 
