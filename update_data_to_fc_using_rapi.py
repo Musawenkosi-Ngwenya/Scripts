@@ -72,17 +72,13 @@ from requests.auth import HTTPBasicAuth
 # CONFIG — adjust here
 # ---------------------------------------------------------------------------
 
-AWS_PROFILE = "musa"
 DEFAULT_REGION = "us-east-1"
 
-# Scope every table query to this SupplierID (assumed to be the partition key
-# on TradePricelists / TargetsAccounts2 / TradeDiscountValues2 / TradeStock).
-# Set to None to fall back to a full table Scan (all suppliers).
-SUPPLIER_ID = "SAGREETINGSTEST"
-
-API_BASE = "https://qa.rapidtradews.com/post"
-API_USERNAME = "SAGREETINGS2"
-API_PASSWORD = "PASSWORD" 
+AWS_PROFILE = None
+SUPPLIER_ID = None
+API_BASE = None
+API_USERNAME = None
+API_PASSWORD = None
 
 # If the real auth is different (e.g. token in JSON body instead of Basic Auth),
 # change AUTH_MODE to "payload" and fill in how the endpoint expects it.
@@ -577,13 +573,81 @@ def process_entity(session_boto, entity, dry_run=False, auto=False, region=DEFAU
         f"({success} OK / {fail} failed), in {elapsed:.1f}s"
     )
 
+#---------------------------------------------------------------------------
+# User Inputs
+#---------------------------------------------------------------------------
+def prompt_configuration():
+    """Prompt the user for runtime configuration."""
+
+    global AWS_PROFILE
+    global SUPPLIER_ID
+    global API_USERNAME
+    global API_PASSWORD
+    global API_BASE
+
+    print("\n===== Runtime Configuration =====\n")
+
+    AWS_PROFILE = input("AWS Profile: ").strip()
+    SUPPLIER_ID = input("Supplier ID: ").strip()
+    API_USERNAME = input("API Username: ").strip()
+    API_PASSWORD = input("API Password: ").strip()
+
+    while True:
+        env = input("Environment (qa/prod): ").strip().lower()
+
+        if env == "qa":
+            API_BASE = "https://qa.rapidtradews.com/post"
+            break
+        elif env == "prod":
+            API_BASE = "https://rapi.rapidtradews.com/post"
+            break
+        else:
+            print("Please enter either 'qa' or 'prod'.")
+
+    print("\nConfiguration Loaded")
+    print(f" AWS Profile : {AWS_PROFILE}")
+    print(f" Supplier ID : {SUPPLIER_ID}")
+    print(f" Environment : {env.upper()}")
+    print()
+
 
 # ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
 
 def main():
+    global ENTITIES
+    prompt_configuration()
+
+    ENTITIES = [
+        {
+            "key": "pricelist",
+            "name": "Pricelists",
+            "table": "TradePricelists",
+            "endpoint": f"{API_BASE}/pricelist",
+        },
+        {
+            "key": "accounts",
+            "name": "Accounts",
+            "table": "TargetsAccounts2",
+            "endpoint": f"{API_BASE}/account",
+        },
+        {
+            "key": "discountvalues2",
+            "name": "DiscountValues",
+            "table": "TradeDiscountValues2",
+            "endpoint": f"{API_BASE}/discountvalues2",
+        },
+        {
+            "key": "stock",
+            "name": "Stock",
+            "table": "TradeStock",
+            "endpoint": f"{API_BASE}/stock",
+        },
+    ]
+
     all_keys = [e["key"] for e in ENTITIES]
+
 
     parser = argparse.ArgumentParser(description="Sync Pricelists/Accounts/DiscountValues/Stock to FC QA API")
     parser.add_argument(
